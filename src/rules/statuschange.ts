@@ -7,7 +7,7 @@ let ignoreStatuses = ["withdrawn", "stagnant", "final", "living"];
 export default async function (_octokit: Octokit, config: Config, files: File[] ) : Promise<Rule[]> {
     // Get results
     let res : Rule[][] = await Promise.all(files.map(async file => {
-        if (!file.filename.endsWith(".md")) return [];
+        if (!file.filename.endsWith(".md") || !file.filename.startsWith("EIPS/")) return [];
 
         let frontMatter = fm<FrontMatter>(file.previous_contents as string);
         let frontMatterNew = fm<FrontMatter>(file.contents as string);
@@ -19,8 +19,9 @@ export default async function (_octokit: Octokit, config: Config, files: File[] 
                 min: 1,
                 annotation: {
                     file: file.filename
-                }
-            }]; // Fallback: require editor approval if there's missing statuses
+                },
+                labels: ["e-consensus"]
+            }] as Rule[]; // Fallback: require editor approval if there's missing statuses
         }
         
         let statusOld = frontMatter.attributes?.status?.toLowerCase() as string;
@@ -37,8 +38,9 @@ export default async function (_octokit: Octokit, config: Config, files: File[] 
                 min: 1,
                 annotation: {
                     file: file.filename
-                }
-            }];
+                },
+                labels: ["e-review"]
+            }] as Rule[];
         }
 
         return [];
