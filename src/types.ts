@@ -2,29 +2,30 @@ import core from "@actions/core";
 
 export declare type File = {
     sha?: string;
+    status:
+        | "removed"
+        | "modified"
+        | "renamed"
+        | "added"
+        | "copied"
+        | "changed"
+        | "unchanged";
     filename: string;
-    status: "removed" | "modified" | "renamed" | "added" | "copied" | "changed" | "unchanged";
-    additions?: number; 
-    deletions?: number;
-    changes?: number;
-    blob_url?: string;
-    raw_url?: string;
-    contents_url?: string;
-    patch?: string | undefined;
     previous_filename?: string | undefined;
     contents?: string | undefined;
     previous_contents?: string | undefined;
 };
 
-export declare type Octokit = import("@octokit/core/dist-types").Octokit & import("@octokit/plugin-rest-endpoint-methods/dist-types/types").Api & {
-    paginate: import("@octokit/plugin-paginate-rest").PaginateInterface;
-};
+export declare type Octokit = import("@octokit/core/dist-types").Octokit &
+    import("@octokit/plugin-rest-endpoint-methods/dist-types/types").Api & {
+        paginate: import("@octokit/plugin-paginate-rest").PaginateInterface;
+    };
 
 export declare type Rule = {
     /**
      * The name of the rule
-     */ 
-    name: string;  
+     */
+    name: string;
 
     /**
      * The list of GitHub usernames (case insensitive) that are needed to satisfy the rule
@@ -56,10 +57,14 @@ export declare type Rule = {
      */
     exclude_labels?: string[] | undefined;
 };
-export declare type RuleProcessed = Rule & { label_min: number; };
-export declare type RuleGenerator = ((octokit: Octokit, config: Config, files: File[]) => Promise<Rule[]>);
+export declare type RuleProcessed = Rule & { label_min: number };
+export declare type RuleGenerator = (
+    octokit: Octokit,
+    config: Config,
+    files: File[],
+) => Promise<Rule[]>;
 export declare type Config = { [key: string]: string[] };
 export declare type FrontMatter = {
-    'last-call-deadline': Date; 
-    'created': Date;
+    "last-call-deadline": Date;
+    created: Date;
 } & { [key: string]: string };
